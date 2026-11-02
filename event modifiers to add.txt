@@ -1,0 +1,9 @@
+vassal_state_seized = {
+	icon = 6
+}
+province_marker = {
+	icon = 6
+}
+country_marker = {
+	icon = 6
+}

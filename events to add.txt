@@ -1,0 +1,182 @@
+country_event = {
+	id = 1337009
+	title = "State Seizure"
+	desc = "$FROMCOUNTRY$ is considering taking one of our states."
+	
+	is_triggered_only = yes
+	
+	immediate = {
+		FROM = { country_event = 1337010 }
+	}
+
+	option = {
+		name = "Damn."
+	}
+}
+
+country_event = {
+	id = 1337010
+	title = "State Seizure"
+	desc = "Is $FROMCOUNTRY$ the country you want land from?"
+	
+	is_triggered_only = yes
+	allow_multiple_instances = yes
+
+	option = {
+		name = "Yes."
+
+		any_country = {
+			limit = {
+				vassal_of = THIS
+				has_country_modifier = country_marker
+			}
+			remove_country_modifier = country_marker
+		}
+
+		random_owned = {
+			limit = {
+				THIS = {
+					NOT = {has_country_modifier = vassal_state_seized}
+				}
+			}
+		
+			FROM = {
+				random_owned = {
+					limit = {
+						NOT = {has_province_modifier = province_marker}
+					}
+					province_event = { id = 1337011 days = 0 }
+				}
+			}
+		}
+	}
+	option = {
+		name = "No."
+		FROM = {
+			add_country_modifier = {
+				name = country_marker
+				duration = 30
+			}
+		}
+		random_country = {
+			limit = {
+				vassal_of = THIS
+				NOT = {has_country_modifier = country_marker}
+			}
+			country_event = { id = 1337009 days = 0 }
+		}
+	}
+}
+
+province_event = {
+	id = 1337011
+	title = "State Seizure"
+	desc = "$FROMCOUNTRY$ is considering taking this state."
+	
+	is_triggered_only = yes
+	allow_multiple_instances = yes
+
+	immediate = {
+		FROM = {country_event = 1337012}
+	}
+
+	option = {
+		name = "Damn."
+	}
+}
+
+country_event = {
+	id = 1337012
+	title = "State Seizure"
+	desc = "Is $FROMPROVINCE$ in the state you want land from?"
+	
+	is_triggered_only = yes
+	allow_multiple_instances = yes
+
+	option = {
+		name = "Yes."
+
+		FROM = {
+			any_owned = {
+				remove_province_modifier = province_marker
+			}
+		}
+
+		random_owned = {
+			limit = {
+				THIS = {
+					NOT = {has_country_modifier = vassal_state_seized}
+				}
+			}
+			FROM = {
+				add_province_modifier = {
+					name = province_marker
+					duration = 30
+				}
+		
+				any_owned = {
+					limit = {
+						state_scope = {
+							any_owned_province  = {has_province_modifier = province_marker}
+						}
+					}
+					add_province_modifier = {
+						name = province_marker
+						duration = 30
+					}
+				}
+
+				# TODO: DO A STATE FLAG CHECK HERE VIA any_owned = {limit = {state_scope = {any_owned_province  = {has_province_modifier = province_marker is_core = SMA}}} THIS = {set_country_flag = taking_small}} (OR SIMILAR CHECKS)
+				# THEN IN NEXT THIS BLOCK DO AN IF CHECK ON THE SET COUNTRY FLAGS TO DO VARIABLE COST/COOLDOWN DEPENDING ON STATE SIZE, CORE/UNION TAG CORE STATUS, ETC
+
+				# END TODO
+
+				any_owned = {
+					limit = {
+						has_province_modifier = province_marker
+					}
+					secede_province = THIS
+				}
+			}
+			THIS = {
+				# COST AND COOLDOWN PLACED HERE AND HERE ONLY!!!!!!!
+				# FROM WORKS AS BOTH THE PROVINCE THAT 1337011 HAPPENS IN AS WELL AS THE OWNER TAG (THANKS PARADOX VERY COOL)
+
+
+				add_country_modifier = {
+					name = vassal_state_seized
+					duration = 365
+				}
+			}
+		}
+	}
+	option = {
+		name = "No."
+
+		FROM = {
+			add_province_modifier = {
+				name = province_marker
+				duration = 30
+			}
+		
+			any_owned = {
+				limit = {
+					state_scope = {
+						any_owned_province  = {has_province_modifier = province_marker}
+					}
+				}
+				add_province_modifier = {
+					name = province_marker
+					duration = 30
+				}
+			}
+			random_owned = {
+				limit = {
+					NOT = {has_province_modifier = province_marker}
+				}
+				province_event = { id = 1337011 days = 0 }
+			}
+
+		}
+	}
+}

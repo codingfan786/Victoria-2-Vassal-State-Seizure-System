@@ -1,0 +1,26 @@
+political_decisions = {
+
+	take_puppet_state = {
+		potential = {
+			OR = {
+				num_of_vassals = 1
+				num_of_vassals_no_substates = 1
+			}
+		}
+		allow = {
+			NOT = {has_country_modifier = vassal_state_seized}
+			war = no
+		}
+		effect = {
+			random_country = {
+				limit = {
+					vassal_of = THIS
+					NOT = {has_country_modifier = country_marker}
+				}
+				country_event = { id = 1337009 days = 0 }
+			}
+		}
+	}
+
+
+}
